@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Formulaire de connexion</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-start: #0b66c3;
+            --bg-end: #0b3f97;
+            --panel: #ffffff;
+            --ink: #0b2040;
+            --ink-muted: #6b7a90;
+            --primary: #0b76d1;
+            --primary-strong: #0763b4;
+            --ring: rgba(11, 118, 209, .35);
+            --shadow: 0 30px 60px rgba(0, 0, 0, .22), 0 10px 24px rgba(0, 0, 0, .12);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(1200px 600px at 90% 110%, rgba(255, 255, 255, .08) 0%, transparent 60%),
+                linear-gradient(140deg, var(--bg-start), var(--bg-end));
+        }
+
+        /* Scène globale avec bords arrondis comme la maquette */
+        .stage {
+            min-height: 100%;
+            display: grid;
+            place-items: center;
+            padding: 28px;
+        }
+
+        .stage-frame {
+            position: relative;
+            width: min(1100px, 96vw);
+            min-height: min(680px, 88vh);
+        }
+
+        /* Badge couronne */
+        .badge {
+            position: absolute;
+            top: 22px;
+            left: 22px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: rgba(0, 0, 0, .25);
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .18);
+            backdrop-filter: saturate(140%) blur(2px);
+        }
+
+        .badge svg {
+            width: 26px;
+            height: 26px;
+            fill: #ffbf00;
+        }
+
+        /* Carte centrale */
+        .card {
+            position: relative;
+            margin: 0 auto;
+            padding: 0 20px 0 0;
+            width: min(980px, 100%);
+            min-height: 420px;
+            border-radius: var(--radius);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            isolation: isolate;
+            transition: all 0.6s ease-in-out;
+        }
+
+        /* Animation pour inverser la carte */
+        .card.flipped {
+            grid-template-columns: 1fr 1.1fr;
+            padding: 0 0 0 20px;
+        }
+
+        /* Colonne gauche (Welcome) */
+        .left {
+            position: relative;
+            padding: 46px 42px;
+            color: #fff;
+            transition: all 0.6s ease-in-out;
+            order: 1;
+        }
+
+        .card.flipped .left {
+            order: 2;
+        }
+
+        .left .panel {
+            position: absolute;
+            border-radius: 100%;
+            padding: 28px 26px 34px 180px;
+            background: radial-gradient(circle at 28% 28%, #69b1ff, #0b5ec0 40%, #0a4aa3 68%, #063071 98%);
+            box-shadow:
+                inset -14px -18px 30px rgba(0, 0, 0, .25),
+                inset 12px 12px 20px rgba(255, 255, 255, .18),
+                0 20px 40px rgba(0, 0, 0, .35);
+            filter: saturate(110%);
+            backdrop-filter: blur(2px);
+            text-align: center;
+            min-width: 600px;
+            min-height: 600px;
+            right: 50px;
+            bottom: 100px;
+            transition: all 0.6s ease-in-out;
+        }
+
+        .card.flipped .left .panel {
+            right: auto;
+            left: 50px;
+            padding: 28px 180px 26px 34px;
+        }
+
+        .welcome {
+            letter-spacing: .15em;
+            font-weight: bold;
+            font-size: 35px;
+            margin: 200px 0 8px;
+            transition: all 0.4s ease-in-out;
+        }
+
+        .subtitle {
+            margin: 0 0 14px;
+            opacity: .9;
+            font-weight: 600;
+            letter-spacing: .08em;
+            transition: all 0.4s ease-in-out;
+        }
+
+        .lorem {
+            margin: 0;
+            line-height: 2;
+            opacity: .9;
+            padding: 0 20px;
+            transition: all 0.4s ease-in-out;
+        }
+
+        /* Sphères 3D décoratives */
+        .sphere {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 28% 28%, #69b1ff, #0b5ec0 40%, #0a4aa3 68%, #063071 98%);
+            box-shadow:
+                inset -14px -18px 30px rgba(0, 0, 0, .25),
+                inset 12px 12px 20px rgba(255, 255, 255, .18),
+                0 20px 40px rgba(0, 0, 0, .35);
+            filter: saturate(110%);
+            transition: all 0.6s ease-in-out;
+        }
+
+        .s1 {
+            width: 280px;
+            height: 280px;
+            bottom: -100px;
+            left: -80px;
+        }
+
+        .card.flipped .s1 {
+            left: auto;
+            right: -80px;
+        }
+
+        .s2 {
+            width: 180px;
+            height: 180px;
+            bottom: 60px;
+            left: 70%;
+            transform: translateX(-50%);
+        }
+
+        .card.flipped .s2 {
+            left: 30%;
+        }
+
+        .s3 {
+            width: 120px;
+            height: 120px;
+            right: -520px;
+            bottom: -40px;
+        }
+
+        .card.flipped .s3 {
+            right: auto;
+            left: -520px;
+        }
+
+        /* Colonne droite (formulaire) */
+        .right {
+            padding: 42px 42px 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            transition: all 0.6s ease-in-out;
+            order: 2;
+        }
+
+        .card.flipped .right {
+            order: 1;
+        }
+
+        .right h2 {
+            margin: 6px 0 6px;
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: .01em;
+            color: #13233a;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .hint {
+            margin: 0 0 4px;
+            color: var(--ink-muted);
+            font-size: 14px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: -5px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* CSS pour les icônes à l'intérieur de l'input */
+        .input {
+            flex: 1;
+            position: relative;
+        }
+
+        .input .icon {
+            position: absolute;
+            top: 50%;
+            left: 12px;
+            transform: translateY(-50%);
+        }
+
+        .input .icon svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--ink-muted);
+        }
+
+        .input input {
+            width: 100%;
+            height: 42px;
+            border-radius: 10px;
+            padding: 0 12px 0 42px;
+            border: 1px solid #e2e8f0;
+            outline: none;
+            font-size: 14px;
+            background: #f8fafc;
+            transition: box-shadow .15s ease, border-color .15s ease, background .15s ease;
+        }
+
+        .input input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--ring);
+            background: #fff;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: -1px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--ink-muted);
+            font-size: 14px;
+        }
+
+        .remember input {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn {
+            height: 44px;
+            border: none;
+            border-radius: 12px;
+            padding: 0 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .04s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-strong) 100%);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(11, 118, 209, .35), 0 2px 6px rgba(0, 0, 0, .12);
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.03);
+        }
+
+        .btn-outline {
+            width: 100%;
+            background: #fff;
+            color: #13233a;
+            border: 2px solid #e4e9f2;
+        }
+
+        .btn-outline:hover {
+            border-color: #d3dbe8;
+        }
+
+        .or {
+            text-align: center;
+            color: var(--ink-muted);
+            font-size: 13px;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: -5px;
+            color: var(--ink-muted);
+            font-size: 14px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .footer-note a {
+            color: var(--primary-strong);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .footer-note a:hover {
+            text-decoration: underline;
+        }
+
+        /* Boutons sociaux */
+        .social-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-top: -5px;
+        }
+
+        .btn-social {
+            width: 48px;
+            height: 44px;
+            border: 2px solid #e4e9f2;
+            border-radius: 12px;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s ease;
+            padding: 0;
+        }
+
+        .btn-social:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+        }
+
+        .btn-social:active {
+            transform: translateY(0);
+        }
+
+        .btn-social.google:hover {
+            border-color: #4285F4;
+            box-shadow: 0 4px 12px rgba(66, 133, 244, .2);
+        }
+
+        .btn-social.facebook:hover {
+            border-color: #1877F2;
+            box-shadow: 0 4px 12px rgba(24, 119, 242, .2);
+        }
+
+        .btn-social.linkedin:hover {
+            border-color: #0A66C2;
+            box-shadow: 0 4px 12px rgba(10, 102, 194, .2);
+        }
+
+        /* Responsif */
+        @media (max-width: 900px) {
+            .card {
+                grid-template-columns: 1fr;
+            }
+
+            .card.flipped {
+                grid-template-columns: 1fr;
+            }
+
+            .left {
+                padding: 34px 28px 80px;
+            }
+
+            .s3 {
+                display: none;
+            }
+
+            .cut {
+                display: none;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .stage-frame {
+                padding: 22px;
+            }
+
+            .badge {
+                transform: scale(.92);
+            }
+
+            .left .panel {
+                padding: 22px;
+            }
+
+            .welcome {
+                font-size: 24px;
+            }
+
+            .right {
+                padding: 26px 22px 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="stage">
+        <section class="stage-frame">
+            <div class="card" role="region" aria-label="Login card" id="loginCard">
+                <div class="left">
+                    <div class="panel">
+                        <h1 class="welcome" id="welcomeText">WELCOME</h1>
+                        <p class="subtitle" id="subtitleText">YOUR HEADLINE NAME</p>
+                        <p class="lorem" id="loremText">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vitae blandit sapien. Quisque
+                            at orci at quam rutrum.
+                        </p>
+                    </div>
+
+                    <div class="sphere s1" aria-hidden="true"></div>
+                    <div class="sphere s2" aria-hidden="true"></div>
+                    <div class="sphere s3" aria-hidden="true"></div>
+                    <div class="cut" aria-hidden="true"></div>
+                </div>
+
+                <!-- Formulaire Sign In -->
+                <form class="right" action="#" method="post" autocomplete="on" aria-label="Sign in form" id="signInForm">
+                    <h2>Sign in</h2>
+                    <p class="hint">Enter your username and password to sign in</p>
+                    
+                    <label class="field">
+                        <span class="input">
+                            <span class="icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 12c2.761 0 5-2.69 5-6s-2.239-6-5-6-5 2.69-5 6 2.239 6 5 6zm0 2c-4.418 0-8 2.91-8 6.5V23h16v-2.5C20 16.91 16.418 14 12 14z" />
+                                </svg>
+                            </span>
+                            <input type="email" name="username" placeholder="User name" required />
+                        </span>
+                    </label>
+
+                    <label class="field">
+                        <span class="input">
+                            <span class="icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M17 9h-1V7a4 4 0 10-8 0v2H7a2 2 0 00-2 2v9a2 2 0 002 2h10a2 2 0 002-2v-9a2 2 0 00-2-2zm-6 0V7a3 3 0 116 0v2H11zm1 6.732V18h2v-2.268a2 2 0 10-2 0z" />
+                                </svg>
+                            </span>
+                            <input type="password" name="password" placeholder="Password" required />
+                        </span>
+                    </label>
+
+                    <div class="actions">
+                        <label class="remember">
+                            <input type="checkbox" name="remember" />
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" class="hint" style="text-decoration:none;">Forgot password?</a>
+                    </div>
+
+                    <button class="btn btn-primary" type="submit">Sign in</button>
+                    <div class="or" style="flex-direction: row; display: flex;">
+                        <hr color="#bfbfc0" width="150px" style="opacity: 0.3;"> or
+                        <hr color="#bfbfc0" width="150px" style="opacity: 0.3;">
+                    </div>
+                    
+                    <div class="social-buttons">
+                        <button class="btn-social google" type="button" title="Sign in with Google">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                        </button>
+                        
+                        <button class="btn-social facebook" type="button" title="Sign in with Facebook">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </button>
+                        
+                        <button class="btn-social linkedin" type="button" title="Sign in with LinkedIn">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="#0A66C2" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <p class="footer-note">
+                        Don't have an account? <a href="#" id="showSignUp">Sign Up</a>
+                    </p>
+                </form>
+
+                <!-- Formulaire Sign Up -->
+                <form class="right" action="#" method="post" autocomplete="on" aria-label="Sign up form" id="signUpForm" style="display: none;">
+                    <h2>Sign up</h2>
+                    <p class="hint">Enter your details to create an account</p>
+
+                    <label class="field">
+                        <span class="input">
+                            <span class="icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                                </svg>
+                            </span>
+                            <input type="email" name="email" placeholder="Email address" required />
+                        </span>
+                    </label>
+
+                    <label class="field">
+                        <span class="input">
+                            <span class="icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M17 9h-1V7a4 4 0 10-8 0v2H7a2 2 0 00-2 2v9a2 2 0 002 2h10a2 2 0 002-2v-9a2 2 0 00-2-2zm-6 0V7a3 3 0 116 0v2H11zm1 6.732V18h2v-2.268a2 2 0 10-2 0z" />
+                                </svg>
+                            </span>
+                            <input type="password" name="newPassword" placeholder="Password" required />
+                        </span>
+                    </label>
+
+                    <label class="field">
+                        <span class="input">
+                            <span class="icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M17 9h-1V7a4 4 0 10-8 0v2H7a2 2 0 00-2 2v9a2 2 0 002 2h10a2 2 0 002-2v-9a2 2 0 00-2-2zm-6 0V7a3 3 0 116 0v2H11zm1 6.732V18h2v-2.268a2 2 0 10-2 0z" />
+                                </svg>
+                            </span>
+                            <input type="password" name="confirmPassword" placeholder="Confirm Password" required />
+                        </span>
+                    </label>
+
+                    <div class="actions">
+                        <label class="remember">
+                            <input type="checkbox" name="terms" required />
+                            <span>I agree to the Terms & Conditions</span>
+                        </label>
+                    </div>
+
+                    <button class="btn btn-primary" type="submit">Sign up</button>
+                    <div class="or" style="flex-direction: row; display: flex;">
+                        <hr color="#bfbfc0" width="150px" style="opacity: 0.3;"> or
+                        <hr color="#bfbfc0" width="150px" style="opacity: 0.3;">
+                    </div>
+                    
+                    <div class="social-buttons">
+                        <button class="btn-social google" type="button" title="Sign up with Google">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                        </button>
+                        
+                        <button class="btn-social facebook" type="button" title="Sign up with Facebook">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </button>
+                        
+                        <button class="btn-social linkedin" type="button" title="Sign up with LinkedIn">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="#0A66C2" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <p class="footer-note">
+                        Already have an account? <a href="#" id="showSignIn">Sign In</a>
+                    </p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const loginCard = document.getElementById('loginCard');
+        const signInForm = document.getElementById('signInForm');
+        const signUpForm = document.getElementById('signUpForm');
+        
+        // Variables pour les textes du panneau
+        const welcomeText = document.getElementById('welcomeText');
+        const subtitleText = document.getElementById('subtitleText');
+        const loremText = document.getElementById('loremText');
+
+        function showSignUp() {
+            // Masquer le formulaire Sign In et afficher Sign Up
+            signInForm.style.display = 'none';
+            signUpForm.style.display = 'flex';
+            
+            // Animer la carte
+            loginCard.classList.add('flipped');
+            
+            // Changer les textes du panneau de gauche
+            welcomeText.textContent = 'JOIN US';
+            subtitleText.textContent = 'CREATE YOUR ACCOUNT';
+            loremText.textContent = 'Sign up to discover new features and connect with our community!';
+        }
+
+        function showSignIn() {
+            // Masquer le formulaire Sign Up et afficher Sign In
+            signUpForm.style.display = 'none';
+            signInForm.style.display = 'flex';
+            
+            // Animer la carte
+            loginCard.classList.remove('flipped');
+            
+            // Restaurer les textes du panneau de gauche
+            welcomeText.textContent = 'WELCOME';
+            subtitleText.textContent = 'YOUR HEADLINE NAME';
+            loremText.textContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vitae blandit sapien. Quisque at orci at quam rutrum.';
+        }
+
+        // Attacher les événements
+        document.addEventListener('DOMContentLoaded', function () {
+            const showSignUpLink = document.getElementById('showSignUp');
+            const showSignInLink = document.getElementById('showSignIn');
+            
+            if (showSignUpLink) {
+                showSignUpLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    showSignUp();
+                });
+            }
+            
+            if (showSignInLink) {
+                showSignInLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    showSignIn();
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
